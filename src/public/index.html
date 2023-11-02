@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="SchruteBot | Talk to AI Dwight Schrute">
+<meta property="og:title" content="SchruteBot">
+<meta property="og:url" content="https://dwight.theoffice.foo/">
+<meta property="og:type" content="website">
+<meta property="og:description" content="SchruteBot | Talk to AI Dwight Schrute">
+<meta property="og:image" content="https://cdn.theoffice.foo/dwightai.jpg">
+<link rel="shortcut icon" type="image/x-icon" href="https://cdn.theoffice.foo/dwightai.jpg">
+
+<title>SchruteBot | Chat with Dwight Schrute</title>
+<style>
+  @font-face {
+    font-family: 'TheOfficeFont';
+    src: url('https://cdn.theoffice.foo/American-Typewriter-Regular.ttf') format('amtr');
+    font-weight: normal;
+    font-style: normal;
+  }
+  body {
+    height: 100%;
+    font-family: 'TheOfficeFont', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: grey;
+    flex-direction: column;
+  }
+  #site-title {
+    clear: both;
+    margin: 0 auto;
+    display: block;
+    padding: 20px;
+    font-size: 28px;
+    text-align: center;
+    font-family: 'TheOfficeFont', sans-serif;
+  }
+  #chat-container {
+    display: block;
+    margin: 0 auto;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    overflow: hidden;
+    width: 700px;
+    max-width: 100%;
+    font-family: 'TheOfficeFont', sans-serif;
+  }
+  #chat-box {
+    margin: 0 auto;
+    height: 500px;
+    overflow-y: auto;
+    padding: 50px;
+    background-image: url('https://cdn.theoffice.foo/420125.jpg');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+  }
+  #user-input {
+    display: flex;
+  }
+  #user-input input {
+    flex-grow: 1;
+    padding: 10px;
+    border: none;
+    border-top: 1px solid #ddd;
+  }
+  #user-input button {
+    padding: 10px;
+    border: none;
+    background-color: #ff9900; /* Schrute Farms beet color */
+    color: white;
+    cursor: pointer;
+    font-family: 'TheOfficeFont', sans-serif;
+  }
+  .message {
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    background-color: rgba(255, 255, 255, 0.8);
+    font-family: 'TheOfficeFont', sans-serif;
+  }
+  .user-message {
+    align-self: flex-end;
+    border-color: #ff9900;
+    font-family: 'TheOfficeFont', sans-serif;
+  }
+  #typing-indicator {
+    font-style: italic;
+    color: #666;
+    padding: 0 20px;
+    margin-bottom: 10px;
+    font-family: 'TheOfficeFont', sans-serif;
+  }
+  footer {
+    text-align: center;
+    padding: 20px;
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    background-color: #1E1E1E;
+    color: white;
+  }
+</style>
+</head>
+<body>
+<div id="site-title">SchruteBot | Talk to AI Dwight Schrute</div>
+<div id="chat-container">
+  <div id="chat-box">
+    <!-- Messages will be displayed here -->
+  </div>
+  <div id="typing-indicator" style="display: none;">Dwight is typing...</div>
+  <div id="user-input">
+    <input type="text" id="input-box" placeholder="Say something...">
+    <button id="send-btn">Send</button>
+  </div>
+</div>
+<footer>
+  Not affiliated with NBC or The Office. Created by <a href="https://twitter.com/raskin_alex/">Alex Raskin</a>.
+</footer>
+
+<script>
+  // Function to send the message to the backend and process the response
+  function sendMessage(message) {
+    const typingIndicator = document.getElementById('typing-indicator');
+    // Replace with the correct URL to your backend
+    const backendUrl = '/';
+    typingIndicator.style.display = 'block';
+
+    fetch(backendUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ message: message })
+    })
+    .then(response => response.json())
+    .then(data => {
+      typingIndicator.style.display = 'none';
+      displayMessage(data.result, 'dwight-message');
+    })
+    .catch(error => {
+      typingIndicator.style.display = 'none';
+      displayMessage('Oops! Something went wrong.', 'dwight-message');
+    });
+    
+  }
+
+  // Function to display the message in the chat box
+  function displayMessage(message, className) {
+    const chatBox = document.getElementById('chat-box');
+    const msgElement = document.createElement('div');
+    msgElement.classList.add('message', className);
+    msgElement.textContent = message;
+    chatBox.appendChild(msgElement);
+  }
+
+  // Event listener for the send button
+  document.getElementById('send-btn').addEventListener('click', function() {
+    const inputBox = document.getElementById('input-box');
+    const userMessage = inputBox.value.trim();
+    if (userMessage !== "") {
+      displayMessage(userMessage, 'user-message');
+      sendMessage(userMessage);
+      inputBox.value = "";
+      // Scroll to the bottom of the chat box to show new messages
+      const chatBox = document.getElementById('chat-box');
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+  });
+  document.getElementById('user-input').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+      const inputBox = document.getElementById('input-box');
+      const userMessage = inputBox.value.trim();
+      displayMessage(userMessage, 'user-message');
+      sendMessage(userMessage);
+      inputBox.value = "";
+      const chatBox = document.getElementById('chat-box');
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+  });
+</script>
+
+</body>
+</html>
