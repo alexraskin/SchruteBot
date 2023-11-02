@@ -42,8 +42,10 @@
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0,0,0,0.1);
     overflow: hidden;
+    overflow-y: auto;
     width: 700px;
     max-width: 100%;
+    -webkit-overflow-scrolling: touch;
     font-family: 'TheOfficeFont', sans-serif;
   }
   #chat-box {
@@ -88,7 +90,7 @@
   }
   #typing-indicator {
     font-style: italic;
-    color: #666;
+    color:white;
     padding: 0 20px;
     margin-bottom: 10px;
     font-family: 'TheOfficeFont', sans-serif;
@@ -96,11 +98,10 @@
   footer {
     text-align: center;
     padding: 20px;
-    position: fixed;
+    position: flex;
     left: 0;
     bottom: 0;
     width: 100%;
-    background-color: #1E1E1E;
     color: white;
   }
 </style>
@@ -113,7 +114,7 @@
   </div>
   <div id="typing-indicator" style="display: none;">Dwight is typing...</div>
   <div id="user-input">
-    <input type="text" id="input-box" placeholder="Say something...">
+    <input type="text" id="input-box" placeholder="What do you want?">
     <button id="send-btn">Send</button>
   </div>
 </div>
