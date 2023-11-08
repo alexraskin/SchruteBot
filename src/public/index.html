@@ -142,7 +142,7 @@
     .then(response => response.json())
     .then(data => {
       typingIndicator.style.display = 'none';
-      displayMessage(data.result, 'dwight-message');
+      displayMessage(data.message, 'dwight-message');
     })
     .catch(error => {
       typingIndicator.style.display = 'none';

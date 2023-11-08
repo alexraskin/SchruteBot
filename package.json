@@ -1,14 +1,16 @@
 {
   "scripts": {
     "dev": "wrangler dev src/index.ts --remote",
-    "deploy": "wrangler deploy --minify src/index.ts"
+    "deploy": "wrangler deploy --minify src/index.ts",
+    "pretty": "prettier --write src/*.ts"
   },
   "dependencies": {
-    "@cloudflare/ai": "^1.0.23",
-    "hono": "^3.9.1"
+    "hono": "^3.9.1",
+    "openai": "^4.16.2"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20230914.0",
+    "prettier": "^3.0.3",
     "wrangler": "^3.14.0"
   }
 }
