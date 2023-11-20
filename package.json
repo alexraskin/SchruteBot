@@ -1,8 +1,8 @@
 {
   "scripts": {
-    "dev": "wrangler dev src/index.ts --remote",
-    "deploy": "wrangler deploy --minify src/index.ts",
-    "pretty": "prettier --write src/*.ts"
+    "dev": "wrangler pages dev --compatibility-date=2023-01-01 ./pages",
+    "deploy": "wrangler pages deploy ./pages",
+    "pretty": "prettier --write functions/api/*.ts"
   },
   "dependencies": {
     "hono": "^3.9.1",
