@@ -5,10 +5,10 @@
     "pretty": "prettier --write functions/api/*.ts"
   },
   "dependencies": {
-    "hono": "^3.9.1",
-    "openai": "^4.16.2"
+    "hono": "^3.9.1"
   },
   "devDependencies": {
+    "@cloudflare/ai": "^1.0.53",
     "@cloudflare/workers-types": "^4.20230914.0",
     "prettier": "^3.0.3",
     "wrangler": "^3.14.0"

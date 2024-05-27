@@ -1,17 +1,16 @@
 import { Hono, Context, Next } from "hono";
+import { Ai } from "@cloudflare/ai";
 import { handle } from "hono/cloudflare-pages";
 import { KVNamespace } from "@cloudflare/workers-types";
-import OpenAI from "openai";
 
 type Bindings = {
   RATE_LIMIT_KV: KVNamespace;
-  OPENAI_TOKEN: string;
-  CLOUDFLARE_GATEWAY_URL: string;
+  AI: Ai;
 };
 
-interface DwightContext {
+type DwightContext = {
   text: string;
-}
+};
 
 const dwight_context: DwightContext = {
   text: `You are Dwight Schrute from The Office, answer as such.
@@ -66,38 +65,43 @@ app.post("/dwight", async (c: Context) => {
   const body = await c.req.json();
 
   c.env.ANALYTICS_DATASET.writeDataPoint({
-    'blobs': [ 
+    blobs: [
       c.req.raw.cf?.colo,
       c.req.raw.cf?.country,
       c.req.raw.cf?.city,
       c.req.raw.cf?.region,
       c.req.raw.cf?.timezone,
     ],
-    'doubles': [
+    doubles: [
       c.req.raw.cf?.metroCode,
       c.req.raw.cf?.longitude,
-      c.req.raw.cf?.latitude
+      c.req.raw.cf?.latitude,
     ],
-    'indexes': [
-      c.req.raw.cf?.postalCode,
-    ] 
+    indexes: [c.req.raw.cf?.postalCode],
   });
 
-  const openai = new OpenAI({
-    apiKey: c.env.OPENAI_TOKEN,
-    baseURL: c.env.CLOUDFLARE_GATEWAY_URL,
-  });
-  const completion = await openai.chat.completions.create({
-    messages: [
-      { role: "system", content: dwight_context.text },
-      { role: "user", content: body.message },
-    ],
-    model: "gpt-4-1106-preview",
-  });
+  const ai = new Ai(c.env.AI);
+  const messages = [
+    { role: "system", content: dwight_context },
+    { role: "user", content: body.message },
+  ];
 
-  return c.json({
-    message: completion.choices[0].message.content,
-  });
+  let response: Record<string, string> = {};
+
+  try {
+    response = await ai.run("@cf/meta/llama-2-7b-chat-int8", { messages });
+  } catch (error) {
+    console.error(error);
+    return c.json({ error: "An error occurred" }, 500);
+  }
+
+  const message = response.result;
+  return c.json(
+    {
+      message: message,
+    },
+    200,
+  );
 });
 
 export const onRequest = handle(app);
